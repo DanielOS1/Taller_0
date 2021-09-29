@@ -27,9 +27,9 @@ public class Taller0 {
 		int [] recaudacionPeliculas = new int[50];
 		String [] numerosDeSalas = new String[50];
 		String [][] horariosDePeliculas = new String[50][50];
+		String [][] idxHorarioPelicula = new String[50][50];
 		int [] cantFunciones = new int[50];
 
-		leerArchivoPeliculas(contadorSalasDeCine,posicionCliente, nombrePeliculas, tiposDePelicula, recaudacionPeliculas, horariosDePeliculas,cantFunciones);
 		
 			
 			
@@ -56,7 +56,8 @@ public class Taller0 {
 		System.out.println("Bienvenido al menu del cliente. \nPorfavor ingrese una opcion \n1) Compra de entrada \n2) informacion del usuario \n3) devolución \n4) cartelera");
 		opcion = scan.nextInt();
 		scan.nextLine();
-		menuCliente(opcion,nombrePeliculas,horariosDePeliculas,cantFunciones);
+		leerArchivoPeliculas(contadorSalasDeCine,posicionCliente, nombrePeliculas, tiposDePelicula, recaudacionPeliculas, horariosDePeliculas,idxHorarioPelicula,cantFunciones);
+		menuCliente(opcion,nombrePeliculas,horariosDePeliculas,idxHorarioPelicula,cantFunciones);
 	}
 
 public static String iniciarSecion(String parametro, int parametro0) throws Exception {
@@ -108,7 +109,7 @@ public static void leerArchivoClientes(String [] lista0, String [] lista1, Strin
 	}
 
 }
-public static void leerArchivoPeliculas(int sumador,int contador,String [] lista0,String [] lista1,int [] lista2,String [][] lista3,int [] lista4) throws Exception {
+public static void leerArchivoPeliculas(int sumador,int contador,String [] lista0,String [] lista1,int [] lista2,String [][] matrix,String [][] matrix2,int [] lista4) throws Exception {
 	BufferedReader arch = new BufferedReader(new FileReader("peliculas.txt"));
 	String line;
 	while ((line = arch.readLine()) != null) {
@@ -120,22 +121,25 @@ public static void leerArchivoPeliculas(int sumador,int contador,String [] lista
 		for (int i = 3;i<partes.length;i += 2) {
 			String numeroSala = partes[i];
 			String horarioPelicula = partes[i+1];
+			matrix2[contador][h] = numeroSala;
+			matrix2[contador][h+1] = horarioPelicula;
+			
 				if(numeroSala.equals("1")) {
-					lista3[contador][h] = "Sala 1 ";
+					matrix[contador][h] = "Sala 1";
 				}else if(numeroSala.equals("2")){
-					lista3[contador][h] = "Sala 2 ";
+					matrix[contador][h] = "Sala 2";
 				}else if(numeroSala.equals("3")){
-					lista3[contador][h] = "Sala 3 ";
+					matrix[contador][h] = "Sala 3";
 				}else {
-					lista3[contador][h]="";
+					matrix[contador][h]="";
 				}
 				
 				if(horarioPelicula.equals("M")) {
-					lista3[contador][h+1] = "en la Mañana |";
+					matrix[contador][h+1] = "en la Mañana";
 				}else if(horarioPelicula.equals("T")){
-					lista3[contador][h+1] = "en la Tarde  |";
+					matrix[contador][h+1] = "en la Tarde";
 				}else {
-					lista3[contador][h+1]="";
+					matrix[contador][h+1]="";
 				}
 				
 				if(partes.length-3 > sumador) {
@@ -157,7 +161,27 @@ public static void leerArchivoPeliculas(int sumador,int contador,String [] lista
 	}
 
 }
-public static void menuCliente(int parametro0,String [] lista0,String [][] matrix,int [] lista2) {
+public static void eleccionFuncion(String[][]matrix0,String [] lista0,int [] lista1,int pelicula) {
+	Scanner scan = new Scanner(System.in);
+	System.out.println("elija una sala: ");
+	String eleccionSala = scan.nextLine();
+	for (int k = 0; k < lista0.length; k += 2) {		
+		if (eleccionSala.equals(matrix0[pelicula][k])) {
+			System.out.println("usted elijio la sala "+matrix0[pelicula][k]);
+			System.out.println("por favor ahora elija el horario de la funcion (M/T)");
+			String eleccionHorario = scan.nextLine();
+			for(int j = 0;  j < lista0.length; j += 2) 
+			if (eleccionHorario.equals(matrix0[pelicula][j+1])) {
+				System.out.println("ustede eligio la sala "+matrix0[pelicula][k] + " "+ matrix0[pelicula][j+1]);
+				System.out.println("a continuacion, se mostrara la sala correspondiente \n____________________________________");
+				break;
+			}
+		break;
+		}
+	}
+
+}
+public static void menuCliente(int parametro0,String [] lista0,String [][] matrix,String [][]matrix2,int [] lista1) {
 	Scanner scan = new Scanner(System.in);
 	 if (parametro0 == 1){
 	        System.out.println("Usted eligio la opcion 1 \nCompra de entradas: ");
@@ -168,11 +192,11 @@ public static void menuCliente(int parametro0,String [] lista0,String [][] matri
 				if(nombrePelicula.equals(lista0[i])){
 					System.out.println("Pelicula encontrada!!, usted eligio la pelicula "+lista0[i]);
 					System.out.println("los horarios disponibles son:");
-				for (int j = 0; j < lista2[i]; j++) {
-					System.out.print(matrix[i][j]+"\n");
-					
+				for (int j = 0; j < lista1[i]; j++) {
+					System.out.print(matrix[i][j]+" ");
 				 }
-				System.out.println("_____________");
+				System.out.println("\n_____________");
+				eleccionFuncion(matrix2, lista0, lista1, i);
 				break;
 				}
 				
