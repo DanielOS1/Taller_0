@@ -15,12 +15,16 @@ public class Taller0 {
 		int opcion = 0;
 		int posicionCliente = 0;
 		int contadorSalasDeCine = -1;
+		int contadorCliente = 0;
+		int idxCliente = 0;
 		String [] nombres = new String[50];
 		String [] apellidos = new String[50];
 		String [] ruts = new String[50];
 		String [] contraseñas = new String[50];
 		int [] saldos = new int[50];
-		leerArchivoClientes(nombres, apellidos, ruts, contraseñas, saldos, posicionCliente);
+		int [] peliculaElegir = new int[50];
+		String [] clientePelicula = new String[50];
+		leerArchivoClientes(nombres, apellidos, ruts, contraseñas, saldos,peliculaElegir,contadorCliente);
 
 		String [] nombrePeliculas = new String[50];
 		String [] tiposDePelicula = new String[50];
@@ -29,65 +33,41 @@ public class Taller0 {
 		String [][] horariosDePeliculas = new String[50][50];
 		String [][] idxHorarioPelicula = new String[50][50];
 		int [] cantFunciones = new int[50];
-
+		
 		
 			
 			
 		
 
-		//Iniciar secion -------->
+		// log in-------->
 		System.out.println("ingrese su rut");
-		rut = iniciarSecion(rut,2);
-
-		while (!archivoClientesIniciarSecion(rut, 2)) {
-			System.out.println("informacion incorrecta, ingrese un rut valido: ");
-			rut = iniciarSecion(rut,2);
+	    rut = scan.nextLine();
+	    for (int i = 0; i < ruts.length; i++) {
+	    	if(rut.equals(ruts[i])) {
+	    		idxCliente = i;
+	    		break;
+	    	}
 		}
-
+	    
+	    
 		System.out.println("ingrese su contraseña");
-		contraseña = iniciarSecion(contraseña,3);
-
-		while (!archivoClientesIniciarSecion(contraseña, 3)) {
-			System.out.println("informacion incorrecta, ingrese una contraseña valida");
-			contraseña = iniciarSecion(contraseña,3);
-		}
-		//Iniciar secion<---------
+		contraseña = scan.nextLine();
+		//log in<---------
 
 		System.out.println("Bienvenido al menu del cliente. \nPorfavor ingrese una opcion \n1) Compra de entrada \n2) informacion del usuario \n3) devolución \n4) cartelera");
 		opcion = scan.nextInt();
 		scan.nextLine();
+		
+		
 		leerArchivoPeliculas(contadorSalasDeCine,posicionCliente, nombrePeliculas, tiposDePelicula, recaudacionPeliculas, horariosDePeliculas,idxHorarioPelicula,cantFunciones);
-		menuCliente(opcion,nombrePeliculas,horariosDePeliculas,idxHorarioPelicula,cantFunciones);
+		menuCliente(opcion,nombrePeliculas,horariosDePeliculas,idxHorarioPelicula,cantFunciones,rut,ruts,tiposDePelicula,saldos,idxCliente,clientePelicula);
 	}
 
-public static String iniciarSecion(String parametro, int parametro0) throws Exception {
-	Scanner scan = new Scanner(System.in);
-	parametro = scan.nextLine();
-	if (archivoClientesIniciarSecion(parametro, parametro0)) {
-		System.out.println("correcto");
-}
-
-return parametro;
-
-}
-
-
-public static boolean archivoClientesIniciarSecion(String parametro0,int parametro1) throws Exception{
-	BufferedReader arch = new BufferedReader(new FileReader("clientes.txt"));
-	String line;
-	while ((line = arch.readLine()) != null) {
-		String [] partes = line.split(",");
-		if (partes[parametro1].equals(parametro0)) {
-			return true;
-		}
 
 
 
-	}return false;
 
-
-}
-public static void leerArchivoClientes(String [] lista0, String [] lista1, String [] lista2, String [] lista3, int [] lista4,int contador) throws Exception {
+public static void leerArchivoClientes(String [] lista0, String [] lista1, String [] lista2, String [] lista3, int [] lista4,int [] lista5,int contador) throws Exception {
 	BufferedReader arch = new BufferedReader(new FileReader("clientes.txt"));
 	String line;
 	while ((line = arch.readLine()) != null) {
@@ -103,13 +83,13 @@ public static void leerArchivoClientes(String [] lista0, String [] lista1, Strin
 		lista2[contador] = rut;
 		lista3[contador] = contraseña;
 		lista4[contador] = saldo;
-
+		lista5[contador] = 0;//pelicula elegida
 		contador++;
 
 	}
 
 }
-public static void leerArchivoPeliculas(int sumador,int contador,String [] lista0,String [] lista1,int [] lista2,String [][] matrix,String [][] matrix2,int [] lista4) throws Exception {
+public static int leerArchivoPeliculas(int sumador,int contador,String [] lista0,String [] lista1,int [] lista2,String [][] matrix,String [][] matrix2,int [] lista4) throws Exception {
 	BufferedReader arch = new BufferedReader(new FileReader("peliculas.txt"));
 	String line;
 	while ((line = arch.readLine()) != null) {
@@ -159,7 +139,7 @@ public static void leerArchivoPeliculas(int sumador,int contador,String [] lista
 		contador++;
 
 	}
-
+ return contador;
 }
 public static void eleccionFuncion(String[][]matrix0,String [] lista0,int [] lista1,int pelicula) {
 	Scanner scan = new Scanner(System.in);
@@ -167,7 +147,7 @@ public static void eleccionFuncion(String[][]matrix0,String [] lista0,int [] lis
 	String eleccionSala = scan.nextLine();
 	for (int k = 0; k < lista0.length; k += 2) {		
 		if (eleccionSala.equals(matrix0[pelicula][k])) {
-			System.out.println("usted elijio la sala "+matrix0[pelicula][k]);
+			System.out.println("usted eligió la sala "+matrix0[pelicula][k]);
 			System.out.println("por favor ahora elija el horario de la funcion (M/T)");
 			String eleccionHorario = scan.nextLine();
 			for(int j = 0;  j < lista0.length; j += 2) 
@@ -181,15 +161,20 @@ public static void eleccionFuncion(String[][]matrix0,String [] lista0,int [] lis
 	}
 
 }
-public static void menuCliente(int parametro0,String [] lista0,String [][] matrix,String [][]matrix2,int [] lista1) {
+public static void menuCliente(int parametro0,String [] lista0,String [][] matrix,
+String [][]matrix2,int [] lista1,String rutCliente,
+String [] listaClientes,String [] tipoPelicula,int [] saldoClientes,int idxCliente,String [] peliculasCompradas) {
+	
+	
 	Scanner scan = new Scanner(System.in);
 	 if (parametro0 == 1){
 	        System.out.println("Usted eligio la opcion 1 \nCompra de entradas: ");
 	        System.out.println("ingrese el nombre de la pelicula para desplegar los horarios: ");
 	        String nombrePelicula = scan.nextLine();
-	        
+	        int indexPelicula = 0;
 	        for (int i = 0; i < lista0.length; i++){
 				if(nombrePelicula.equals(lista0[i])){
+					indexPelicula = i;
 					System.out.println("Pelicula encontrada!!, usted eligio la pelicula "+lista0[i]);
 					System.out.println("los horarios disponibles son:");
 				for (int j = 0; j < lista1[i]; j++) {
@@ -202,7 +187,7 @@ public static void menuCliente(int parametro0,String [] lista0,String [][] matri
 				
 				
 			}
-	        String []letraAsiento = {"A","B","C","D","E","F","G","H","I","J",};
+	        String []letraAsiento = {"A","B","C","D","E","F","G","H","I","J"};
 			String salaCine[][] =new String [10][31];
 
 			for(int i=0;i<salaCine.length;i++) {
@@ -219,19 +204,52 @@ public static void menuCliente(int parametro0,String [] lista0,String [][] matri
 				}		
 				System.out.println();
 			}
-		String[][]salaNueva=consultarAsiento(salaCine);
-
-			for(int i=0;i<salaNueva.length;i++) {
-				for(int j=1;j<salaNueva[0].length;j++) {
-					if(i<5 && j>5 && j<26) {
-						//System.out.print(salaNueva[i][j]+" "); //imprime la sala sin los null
-					}else if(i>=4) {
-						//System.out.print(salaNueva[i][j]+" "); //imprime la sala sin los null
-				}				
-					//System.out.print(salaNueva[i][j]+" "); //imprime la sala con nulls
+			
+			System.out.println("Cuantos asientos desea: ");
+			int cantAsientos = scan.nextInt();
+			String[][]salaNueva=consultarAsiento(salaCine,cantAsientos,rutCliente);
+			String confirmacion;
+		for (int i = 0; i < listaClientes.length; i++) {
+			if (rutCliente.equals(listaClientes[i])){
+				if(tipoPelicula[indexPelicula].equals("estreno")) {
+				int cobroAsientos = cantAsientos*5500;
+				System.out.println("la cantidad a pagar es de: "+cobroAsientos+ " Desea confirmar la compra? si/no");
+				System.out.println("Hola");
+				confirmacion = scan.nextLine();
+				if (confirmacion.equalsIgnoreCase("si")) {
+					saldoClientes[idxCliente] -= cobroAsientos;
+					peliculasCompradas[idxCliente] = nombrePelicula;
+				
+					
+				}else {
+					cobroAsientos = 0;
+				}
+				}else {
+					int cobroAsientos = cantAsientos*4000;
+					System.out.println("la cantidad a pagar es de: "+cobroAsientos+ " Desea confirmar la compra? si/no");
+					confirmacion = scan.nextLine();
+					if (confirmacion.equalsIgnoreCase("si")) {
+						saldoClientes[idxCliente] -= cobroAsientos;
+						peliculasCompradas[idxCliente] = nombrePelicula;
+						
+					}else {
+						cobroAsientos = 0;
+					}
+				}
 			}
-				//System.out.println(); //imprime la sala con nulls
-		} 
+		}
+			
+		for(int i=0;i<salaNueva.length;i++) {
+			for(int j=1;j<salaNueva[0].length;j++) {
+				if(i<5 && j>5 && j<26) {
+					//System.out.print(salaNueva[i][j]+" "); //imprime la sala sin los null
+				}else if(i>=4) {
+					//System.out.print(salaNueva[i][j]+" "); //imprime la sala sin los null
+			}				
+				//System.out.print(salaNueva[i][j]+" "); //imprime la sala con nulls
+		}
+			//System.out.println(); //imprime la sala con nulls
+	} 
 
 	    }
 	    if (parametro0 == 2){
@@ -256,16 +274,13 @@ public static void menuCliente(int parametro0,String [] lista0,String [][] matri
 
 }
 
-public static String[][] consultarAsiento(String salaCine[][]) {
-
+public static String[][] consultarAsiento(String salaCine[][],int cantAsientos,String rutCliente) {
+	Scanner scan = new Scanner(System.in);
 	String asientoInicial=null ;
 	String asientoNormal=null ;
-	String distanciaAsiento=null;
-	int cantAsientos;
+	String distanciaAsiento=null;	
 
-	Scanner scan=new Scanner(System.in);
-	System.out.println("Cuantos asientos desea: ");
-	cantAsientos = scan.nextInt();
+
 
 	System.out.println("Desea asientos juntos o separados: ");
 	distanciaAsiento = scan.next();
@@ -310,6 +325,7 @@ public static String[][] consultarAsiento(String salaCine[][]) {
 		}
 
 	}
+	
 	return salaCine;	
 }								
 
